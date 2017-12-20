@@ -12280,7 +12280,9 @@ A basic RNN model is a good baseline for sequence data.  In this model, you'll b
 <span class="nb">print</span> <span class="p">(</span><span class="n">tmp_x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">preproc_french_sentences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="c1"># Train the neural network </span>
-<span class="c1"># (I faced the issue described into this post: https://discussions.udacity.com/t/capstone-project-model-1-rnn-implementation-invalidargumenterror-received-label-value-344-outside-valid-range-0-344/296300/11)</span>
+<span class="c1"># I faced the issue described into this post: </span>
+<span class="c1"># https://discussions.udacity.com/t/capstone-project-model-1-rnn-implementation-invalidargumenterror-received-label-value-344-outside-valid-range-0-344/296300/11</span>
+<span class="c1"># Hence I incremented by 1 both the word index of english and french tokenizers</span>
 <span class="n">simple_rnn_model</span> <span class="o">=</span> <span class="n">simple_model</span><span class="p">(</span>
     <span class="n">tmp_x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
     <span class="n">preproc_french_sentences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -12415,7 +12417,10 @@ You've turned the words into ids, but there's a better representation of a word.
 <span class="c1"># TODO: Reshape the input</span>
 <span class="n">tmp_x</span> <span class="o">=</span> <span class="n">pad</span><span class="p">(</span><span class="n">preproc_english_sentences</span><span class="p">,</span> <span class="n">preproc_french_sentences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="c1"># TODO: Train the neural network</span>
+<span class="c1"># Train the neural network </span>
+<span class="c1"># I faced the issue described into this post: </span>
+<span class="c1"># https://discussions.udacity.com/t/capstone-project-model-1-rnn-implementation-invalidargumenterror-received-label-value-344-outside-valid-range-0-344/296300/11</span>
+<span class="c1"># Hence I incremented by 1 both the word index of english and french tokenizers</span>
 <span class="n">embed_rnn_model</span> <span class="o">=</span> <span class="n">embed_model</span><span class="p">(</span>
     <span class="n">tmp_x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
     <span class="n">preproc_french_sentences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
