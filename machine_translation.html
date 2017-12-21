@@ -12790,10 +12790,10 @@ new jersey est parfois agréable en mois et il est est en en &lt;PAD&gt; &lt;PAD
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Bidirectional</span><span class="p">,</span> <span class="n">TimeDistributed</span><span class="p">,</span> <span class="n">RepeatVector</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Bidirectional</span><span class="p">,</span> <span class="n">TimeDistributed</span><span class="p">,</span> <span class="n">RepeatVector</span><span class="p">,</span> <span class="n">Input</span>
 <span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">GRU</span>
 <span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="k">import</span> <span class="n">Adam</span>
@@ -12811,6 +12811,10 @@ new jersey est parfois agréable en mois et il est est en en &lt;PAD&gt; &lt;PAD
 <span class="sd">    :return: Keras model built, but not trained</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: Implement</span>
+    
+    <span class="n">units</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.002</span>    
+    
     <span class="n">input_layer</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
     
     <span class="c1"># embedding</span>
@@ -12820,16 +12824,15 @@ new jersey est parfois agréable en mois et il est est en en &lt;PAD&gt; &lt;PAD
         <span class="n">input_length</span><span class="o">=</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])(</span><span class="n">input_layer</span><span class="p">)</span>
     
     <span class="c1"># encoding</span>
-    <span class="n">encoding_layer</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="mi">128</span><span class="p">))(</span><span class="n">embedding_layer</span><span class="p">)</span>
+    <span class="n">encoding_layer</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="n">units</span><span class="p">))(</span><span class="n">embedding_layer</span><span class="p">)</span>
     <span class="n">encoded_layer</span> <span class="o">=</span> <span class="n">RepeatVector</span><span class="p">(</span><span class="n">output_sequence_length</span><span class="p">)(</span><span class="n">encoding_layer</span><span class="p">)</span>
     
     <span class="c1"># decoding</span>
-    <span class="n">decoding_layer</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">encoded_layer</span><span class="p">)</span>
+    <span class="n">decoding_layer</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">GRU</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">encoded_layer</span><span class="p">)</span>
     <span class="n">target_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">french_vocab_size</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)(</span><span class="n">decoding_layer</span><span class="p">)</span>
     
     <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">input_layer</span><span class="p">,</span> <span class="n">target_layer</span><span class="p">)</span>
     
-    <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">sparse_categorical_crossentropy</span><span class="p">,</span>
                   <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">),</span>
                   <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>   
@@ -12861,17 +12864,17 @@ new jersey est parfois agréable en mois et il est est en en &lt;PAD&gt; &lt;PAD
 <pre>_________________________________________________________________
 Layer (type)                 Output Shape              Param #   
 =================================================================
-input_7 (InputLayer)         (None, 15)                0         
+input_3 (InputLayer)         (None, 15)                0         
 _________________________________________________________________
-embedding_9 (Embedding)      (None, 15, 32)            6368      
+embedding_3 (Embedding)      (None, 15, 32)            6368      
 _________________________________________________________________
-bidirectional_13 (Bidirectio (None, 256)               123648    
+bidirectional_5 (Bidirection (None, 256)               123648    
 _________________________________________________________________
-repeat_vector_9 (RepeatVecto (None, 21, 256)           0         
+repeat_vector_3 (RepeatVecto (None, 21, 256)           0         
 _________________________________________________________________
-bidirectional_14 (Bidirectio (None, 21, 256)           295680    
+bidirectional_6 (Bidirection (None, 21, 256)           295680    
 _________________________________________________________________
-dense_7 (Dense)              (None, 21, 344)           88408     
+dense_3 (Dense)              (None, 21, 344)           88408     
 =================================================================
 Total params: 514,104
 Trainable params: 514,104
@@ -12896,7 +12899,7 @@ Final Model Loaded
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -12919,7 +12922,7 @@ Final Model Loaded
             <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">x_tk</span><span class="o">.</span><span class="n">word_index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">y_tk</span><span class="o">.</span><span class="n">word_index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tmp_x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">tmp_x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
     
     <span class="c1">## DON&#39;T EDIT ANYTHING BELOW THIS LINE</span>
     <span class="n">y_id_to_word</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">y_tk</span><span class="o">.</span><span class="n">word_index</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -12937,9 +12940,11 @@ Final Model Loaded
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sample 2:&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">y_id_to_word</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">y_id_to_word</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+    
+    <span class="k">return</span> <span class="n">model</span>
 
-
-<span class="n">final_predictions</span><span class="p">(</span><span class="n">preproc_english_sentences</span><span class="p">,</span> <span class="n">preproc_french_sentences</span><span class="p">,</span> <span class="n">english_tokenizer</span><span class="p">,</span> <span class="n">french_tokenizer</span><span class="p">)</span>
+<span class="c1"># Model returned to allow a post detailed check on predictions</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">final_predictions</span><span class="p">(</span><span class="n">preproc_english_sentences</span><span class="p">,</span> <span class="n">preproc_french_sentences</span><span class="p">,</span> <span class="n">english_tokenizer</span><span class="p">,</span> <span class="n">french_tokenizer</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12959,49 +12964,123 @@ Final Model Loaded
 <pre>_________________________________________________________________
 Layer (type)                 Output Shape              Param #   
 =================================================================
-input_10 (InputLayer)        (None, 15)                0         
+input_5 (InputLayer)         (None, 15)                0         
 _________________________________________________________________
-embedding_12 (Embedding)     (None, 15, 32)            6400      
+embedding_5 (Embedding)      (None, 15, 32)            6400      
 _________________________________________________________________
-bidirectional_19 (Bidirectio (None, 256)               123648    
+bidirectional_9 (Bidirection (None, 256)               123648    
 _________________________________________________________________
-repeat_vector_12 (RepeatVect (None, 21, 256)           0         
+repeat_vector_5 (RepeatVecto (None, 21, 256)           0         
 _________________________________________________________________
-bidirectional_20 (Bidirectio (None, 21, 256)           295680    
+bidirectional_10 (Bidirectio (None, 21, 256)           295680    
 _________________________________________________________________
-dense_10 (Dense)             (None, 21, 345)           88665     
+dense_5 (Dense)              (None, 21, 345)           88665     
 =================================================================
 Total params: 514,393
 Trainable params: 514,393
 Non-trainable params: 0
 _________________________________________________________________
 Train on 110288 samples, validate on 27573 samples
-Epoch 1/10
-110288/110288 [==============================] - 482s - loss: 3.0901 - acc: 0.4387 - val_loss: 2.3847 - val_acc: 0.4960
-Epoch 2/10
-110288/110288 [==============================] - 463s - loss: 2.1780 - acc: 0.5011 - val_loss: 1.9373 - val_acc: 0.5201
-Epoch 3/10
-110288/110288 [==============================] - 470s - loss: 1.8068 - acc: 0.5401 - val_loss: 1.6304 - val_acc: 0.5753
-Epoch 4/10
-110288/110288 [==============================] - 466s - loss: 1.5053 - acc: 0.6017 - val_loss: 1.3921 - val_acc: 0.6271
-Epoch 5/10
-110288/110288 [==============================] - 486s - loss: 1.3211 - acc: 0.6420 - val_loss: 1.2486 - val_acc: 0.6601
-Epoch 6/10
-110288/110288 [==============================] - 490s - loss: 1.1857 - acc: 0.6747 - val_loss: 1.1250 - val_acc: 0.6918
-Epoch 7/10
-110288/110288 [==============================] - 528s - loss: 1.0825 - acc: 0.6982 - val_loss: 1.0427 - val_acc: 0.7053
-Epoch 8/10
-110288/110288 [==============================] - 527s - loss: 1.0177 - acc: 0.7082 - val_loss: 0.9875 - val_acc: 0.7156
-Epoch 9/10
-110288/110288 [==============================] - 483s - loss: 0.9612 - acc: 0.7219 - val_loss: 0.9350 - val_acc: 0.7286
-Epoch 10/10
-110288/110288 [==============================] - 491s - loss: 0.9139 - acc: 0.7326 - val_loss: 0.9017 - val_acc: 0.7350
+Epoch 1/20
+110288/110288 [==============================] - 450s - loss: 2.7676 - acc: 0.4546 - val_loss: 2.0190 - val_acc: 0.4977
+Epoch 2/20
+110288/110288 [==============================] - 448s - loss: 1.7857 - acc: 0.5494 - val_loss: 1.5121 - val_acc: 0.6047
+Epoch 3/20
+110288/110288 [==============================] - 448s - loss: 1.3585 - acc: 0.6353 - val_loss: 1.2616 - val_acc: 0.6526
+Epoch 4/20
+110288/110288 [==============================] - 445s - loss: 1.1396 - acc: 0.6837 - val_loss: 1.0535 - val_acc: 0.7021
+Epoch 5/20
+110288/110288 [==============================] - 445s - loss: 1.0025 - acc: 0.7115 - val_loss: 0.9457 - val_acc: 0.7221
+Epoch 6/20
+110288/110288 [==============================] - 445s - loss: 0.9046 - acc: 0.7317 - val_loss: 0.8598 - val_acc: 0.7411
+Epoch 7/20
+110288/110288 [==============================] - 445s - loss: 0.8262 - acc: 0.7503 - val_loss: 0.7897 - val_acc: 0.7603
+Epoch 8/20
+110288/110288 [==============================] - 446s - loss: 0.7695 - acc: 0.7654 - val_loss: 0.7348 - val_acc: 0.7765
+Epoch 9/20
+110288/110288 [==============================] - 448s - loss: 0.7077 - acc: 0.7842 - val_loss: 0.7027 - val_acc: 0.7863
+Epoch 10/20
+110288/110288 [==============================] - 445s - loss: 0.6501 - acc: 0.8015 - val_loss: 0.6280 - val_acc: 0.8081
+Epoch 11/20
+110288/110288 [==============================] - 445s - loss: 0.5966 - acc: 0.8180 - val_loss: 0.5702 - val_acc: 0.8264
+Epoch 12/20
+110288/110288 [==============================] - 445s - loss: 0.5465 - acc: 0.8334 - val_loss: 0.5272 - val_acc: 0.8397
+Epoch 13/20
+110288/110288 [==============================] - 446s - loss: 0.4862 - acc: 0.8544 - val_loss: 0.4577 - val_acc: 0.8652
+Epoch 14/20
+110288/110288 [==============================] - 456s - loss: 0.4315 - acc: 0.8730 - val_loss: 0.4112 - val_acc: 0.8799
+Epoch 15/20
+110288/110288 [==============================] - 463s - loss: 0.3856 - acc: 0.8874 - val_loss: 0.3648 - val_acc: 0.8942
+Epoch 16/20
+110288/110288 [==============================] - 446s - loss: 0.3410 - acc: 0.9008 - val_loss: 0.3280 - val_acc: 0.9056
+Epoch 17/20
+110288/110288 [==============================] - 449s - loss: 0.2960 - acc: 0.9151 - val_loss: 0.2834 - val_acc: 0.9195
+Epoch 18/20
+110288/110288 [==============================] - 12431s - loss: 0.2632 - acc: 0.9248 - val_loss: 0.2566 - val_acc: 0.9276
+Epoch 19/20
+110288/110288 [==============================] - 469s - loss: 0.2337 - acc: 0.9337 - val_loss: 0.2350 - val_acc: 0.9333
+Epoch 20/20
+110288/110288 [==============================] - 477s - loss: 0.2212 - acc: 0.9364 - val_loss: 0.2134 - val_acc: 0.9395
 Sample 1:
-paris est est en en décembre et il il &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
+il est est en en mois et novembre &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
 Il a vu un vieux camion jaune
 Sample 2:
-new jersey est généralement agréable au l&#39;automne et il est il en en &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
+new jersey est parfois calme pendant l&#39; automne et il est neigeux en avril &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
 &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Checking predictions </span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_tk</span><span class="p">,</span> <span class="n">y_tk</span> <span class="o">=</span> <span class="n">preproc_english_sentences</span><span class="p">,</span> <span class="n">preproc_french_sentences</span><span class="p">,</span> <span class="n">english_tokenizer</span><span class="p">,</span> <span class="n">french_tokenizer</span>
+
+<span class="n">y_id_to_word</span> <span class="o">=</span> <span class="p">{</span><span class="n">value</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">y_tk</span><span class="o">.</span><span class="n">word_index</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">y_id_to_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&lt;PAD&gt;&#39;</span>
+
+<span class="n">sentence</span> <span class="o">=</span> <span class="s1">&#39;he saw a old yellow truck&#39;</span>
+<span class="n">sentence</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_tk</span><span class="o">.</span><span class="n">word_index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+<span class="n">sentence</span> <span class="o">=</span> <span class="n">pad_sequences</span><span class="p">([</span><span class="n">sentence</span><span class="p">],</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">)</span>
+<span class="n">sentences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sentence</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sentences</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sample 1:&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">y_id_to_word</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Il a vu un vieux camion jaune&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sample 2:&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">y_id_to_word</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">[</span><span class="mi">1</span><span class="p">]]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">y_id_to_word</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span> <span class="c1"># with argmax it doesn&#39;t work (changed)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sample 1:
+il a vu un vieux camion jaune &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
+Il a vu un vieux camion jaune
+Sample 2:
+new jersey est parfois calme pendant l&#39; automne et il est neigeux en avril &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
+new jersey est parfois calme pendant l&#39; automne et il est neigeux en avril &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt; &lt;PAD&gt;
 </pre>
 </div>
 </div>
